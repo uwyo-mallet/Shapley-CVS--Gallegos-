@@ -7,18 +7,18 @@ import math
 
 import csv
 
+#Converts the strange file format used by the original code to the new CVS file format 
+
 def convert(file_name, rrs, algorithms, cutoff):
+    #rrs, algorithms, cutoff are legacy variables needed to apply the metric function from the original code. 
     new_cvs = []
     with open(file_name) as file_obj:
         top = next(file_obj).replace('\n','')
         header = (top.split (","))
         reader_obj = csv.reader(file_obj)
-        # print(header)
-        # i = 0
-        # for row in reader_obj:
-        #     if i < 3: print(row)
-        #     i+= 1
-        for l in reader_obj:
+
+        for l in reader_obj: #The old file can be read as a cvs, 
+                            #the code pulls the needed values in each row (l) form the orignal file to create the new row for the new CVS file format
             for h in range(len(header)):
                 if h == 0: 
                     inst = l[h]

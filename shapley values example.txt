@@ -1,3 +1,6 @@
+Text file contains different results, helpful for comparison, will be intergrated into unit tests.
+
+Primary Example
 random   	    816632.90101
 first    	    815927.93023
 insertion  	    340.07511
@@ -8,6 +11,7 @@ median 9 	    816632.62196
 median 3 random 816599.97215
 median 9 random 816588.45264
 
+Shapley value input of orginal code when no metric is given
 insertion 890.2222222223479
 first 890.2222222220843
 median 9 random 890.2222222220843
@@ -18,4 +22,5 @@ median 3 random 890.2222222223479
 dual pivot 890.2222222223479
 median 3 890.2222222223479
 
+Shapley value input of now input for new code without given metric, the only mismatch, when metric is applied the two codes produce the same outcome
 'first': 4257.199575396776, 'dual pivot': 162.05563492063015, 'mid': 203.92200396824757, 'median 9 random': 322.48131349204084, 'median 3 random': 282.77771825395604, 'median 3': 209.393373015873, 'random': 221.7253611111027, 'median 9': 221.2026349206228, 'insertion': 6528598.65238457

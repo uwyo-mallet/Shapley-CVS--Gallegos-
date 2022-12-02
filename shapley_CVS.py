@@ -23,16 +23,16 @@ def getVBSShap(instances, algorithms, scores):
 
     shapleys = {}
 
-    #For each instance
     d = 0
+    #For each instance
     for instance in instances:
         #sys.stderr.write('Processing instance "%s" ...\n' % instance)
         #Sort algorithms by decreasing order of performance.
         #instance_algorithms = sorted([alg for alg in algorithms if re.match("glucose", alg)], key=lambda a : metric(a,instance))
         instance_algorithms = sorted(list(algorithms), key=lambda a :scores[a+instance])
         d += 1
-        #print(d)
-        if not(d % len(instances)*.01): print(d/len(instances)*100, "%", "done")
+        if not(d % len(instances)*.01): print(d/len(instances)*100, "%", "done") #Percentage marks to know the code is processing and not infinite looping
+
         #For each algorithm, from worst to best.
         for i in range(len(instance_algorithms)):
             #print(i)
@@ -78,8 +78,10 @@ def getVBSShap(instances, algorithms, scores):
                     shapleys[jalgorithm] += pos_shap
                 else:
                     shapleys[jalgorithm] += neg_shap
-    #print(shapleys)
     return shapleys
+
+
+#old testing code
 # algorithms = ["insertion", "insertion", "first"]
 # instances = [0, 1, 2]
 # scores = [2.4, 1.05, 0.96]
@@ -91,6 +93,11 @@ def main():
     instances = set([])
     scores = {}
     file_name = sys.argv[1]
+
+    #Opens the file inputed through the terminal, converts the data in the CVS to information containers the function needs, a
+    #Algorithms --> gathers all the names of the different algorithms that will be evaluated.
+    #Instances -->  all the different instances algorithms were run in. 
+    #Scores --> a dictionary that maps an algorithm used and an instance to the score obtained by that algorithm in that test intsance.
     with open(file_name) as file_obj:
         top = next(file_obj).replace('\n','')
         header = (top.split (","))
