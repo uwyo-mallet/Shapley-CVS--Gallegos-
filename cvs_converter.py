@@ -25,7 +25,7 @@ def convert(file_name, rrs, algorithms, cutoff):
                 else:  #float(l[h].split(':')[1]) != 0:
                     algorithm = header[h]
                     performance = float(l[h].split(':')[1])
-                    performance =  PARkRed(algorithm,inst,rrs, algorithms, cutoff, k=10,bound=None)
+                    performance =  PARkRed(algorithm,inst,rrs, algorithms, cutoff, 0,bound=None)
                     new_cvs.append([algorithm,inst,performance])
     return new_cvs
 
@@ -37,18 +37,18 @@ def PARk(algorithm,instance,rrs, algorithms, cutoff, k=10,bound=None):
         c = max([rrs[instance][algorithm][3] for algorithm in algorithms])
         if cutoff is not None:
             c = cutoff
-        return c*k
+        return float(c*k)
     else:
         (r,t,q,c,s) = rrs[instance][algorithm]
         if cutoff is not None:
             c = cutoff
         if (t < c and r in ['SAT','UNSAT']):
-            return t
+            return float(t)
         else:
             if bound == None:
-                return c*k
+                return float(c*k)
             elif bound == "best":
-                return c
+                return float(c)
             elif bound == "worst":
                 return float("inf")
 
