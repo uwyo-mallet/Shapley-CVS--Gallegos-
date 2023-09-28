@@ -31,15 +31,18 @@ def getVBSShap(instances, algorithms, scores):
         #Sort algorithms by decreasing order of performance.
         #instance_algorithms = sorted([alg for alg in algorithms if re.match("glucose", alg)], key=lambda a : metric(a,instance))
         instance_algorithms = sorted(list(algorithms), key=lambda a :scores[a+instance])
+
+
+        #print(instance_algorithms)
         d += 1
         #if not(d % len(instances)*.01): print(d/len(instances)*100, "%", "done") #Percentage marks to know the code is processing and not infinite looping
 
         #For each algorithm, from worst to best.
         for i in range(len(instance_algorithms)):
-            #print(i)
+            #print("loop", instance_algorithms[i])
             ialgorithm = instance_algorithms[i]
 
-            sys.stderr.write('Processing the rule corresponding to %d-th algorithm "%s" being the best in the coalition.\n' % (i,ialgorithm))
+            #sys.stderr.write('Processing the rule corresponding to %d-th algorithm "%s" being the best in the coalition.\n' % (i,ialgorithm))
 
             #The MC-rule is that you must have the algorithm and none of the better ones.
             '''
@@ -54,16 +57,16 @@ def getVBSShap(instances, algorithms, scores):
             #metricvalue = metric(ialgorithm,instance)
             ## normalised as fraction of instances
             #value = 1/float(m)*metricvalue
-            value = scores[instance_algorithms[i]+instance]
-            sys.stderr.write('Value of this rule : 1/%d, %.4f\n' % (m,value))
+            value = float(scores[instance_algorithms[i]+instance])
+            #sys.stderr.write('Value of this rule : 1/%d, %.4f\n' % (m,value))
 
             #Calculate the rule Shapley values, and add them to the global Shapley values.
 
             #Shapley value for positive literals in the rule.
-            pos_shap = value/float(pos*comb(pos+neg,neg,exact=True))
+            pos_shap = float(value)/float(pos*comb(pos+neg,neg,exact=True))
             #Shapley value for negative literals in the rule.
             if neg > 0:
-                neg_shap = value/float(neg*comb(pos+neg,pos,exact=True))
+                neg_shap = -1*float(value)/float(neg*comb(pos+neg,pos,exact=True))
             else:
                 neg_shap = None
 
@@ -74,10 +77,13 @@ def getVBSShap(instances, algorithms, scores):
 
                 if jalgorithm not in shapleys:
                     shapleys[jalgorithm] = 0
+                    #print("None")
                 if j == i:
                     shapleys[jalgorithm] += pos_shap
+                    #print("+",pos_shap, jalgorithm)
                 else:
-                    shapleys[jalgorithm] -= neg_shap
+                    shapleys[jalgorithm] += neg_shap
+                    #print("-",neg_shap, jalgorithm)
     return shapleys
 
 def getVBSShapTemp(instances, algorithms, temporal_order, scores):
@@ -133,8 +139,8 @@ def getVBSShapTemp(instances, algorithms, temporal_order, scores):
 
                 # Calculate the rule Shapley values, and add them to the global Shapley values.
                 combns = float(pos + neg)
-                pos_shap = value / combns
-                shapleys[ialgorithm] += pos_shap
+                pos_shap = float(value / combns)
+                shapleys[ialgorithm] += float(pos_shap)
                 
                 if neg > 0:
                     neg_shap = value / (neg * combns)
@@ -190,9 +196,6 @@ def temporal_marginal_contributions(instances, algorithms, scores, temp_order, t
         available_algorithms = [alg for version in versions for alg in temp_order[version]]
 
         other_algorithms = list(available_algorithms)
-        print(thisversion)
-        print(versions)
-        print(available_algorithms)
         other_algorithms.remove(algorithm)
 
         all_perf = np.sum([max([scores[a+instance] for a in available_algorithms]) for instance in instances])
@@ -215,7 +218,7 @@ def read_file(file_name, algorithms, instances, scores):
         a = header.index("algorithm")
         i = header.index("instance")
         p = header.index("performance")
-        print(header)
+        #print(header)
 
         data = csv.reader(file_obj)
 
@@ -238,7 +241,7 @@ def read_file(file_name, algorithms, instances, scores):
 def read_temporal_file(file_name, temp_order, temp_order_bysolver, algorithms):
     with open(file_name, 'r') as f:
         reader = csv.DictReader(f)
-        print(reader)
+        #print(reader)
         for row in reader:
             if not row['version'] in temp_order:
                 temp_order[row['version']] = []
@@ -277,37 +280,6 @@ def dictScores(algorithms, inputScores):
     for i, alg in enumerate(algorithms):
             scores[alg] = inputScores[i]
     return scores
-
-def unitTest2():
-    algorithms = set(["A1","A2","A3"])
-    instances = set(["T-1", "T-2"])
-    scores = {"A1T-1": 1.02,"A1T-2": 0, "A2T-1" : 0.73, "A2T-2": 0, "A3T-1": 0,  "A3T-2" : 1.31}
-    tempOrder = {"3":['A1','A3'],"2":['A2']}
-    tempOrderBySolver = {"A1":"3","A2":"2","A3":"3"}
-
-    #margAnswersB = [0.29,0,1.31]
-    margAnswers = {"A1": 0.29, "A2": 0, "A3" :1.31}
-    tempMargAnswers = {"A1" : 0.29, "A2" : 0.73, "A3" : 1.31}
-    tempShapAnswers = {"A1" : 0.655, "A2" : 0.73, "A3" : 1.31}
-    shapAnswers ={"A1" : 0.655, "A2" : 0.365, "A3" : 1.31}
-    
-
-
-
-    #answers = [margAnswers, tempMargAnswers, tempShapAnswers, shapAnswers]
-
-    marg = marginal_contributions(instances, algorithms, scores) 
-    tempMarg = temporal_marginal_contributions(instances, algorithms, scores, tempOrder, tempOrderBySolver)
-    shap = getVBSShap(instances, algorithms, scores)
-    tempShap = getVBSShapTemp(instances, algorithms, tempOrder, scores)
-    print(tempMarg)
-
-    #print(dictScores(frozenset(algorithms),margAnswersB), marg)
-
-    functions = [(marg, margAnswers, "Marginal Contribution"), (tempMarg, tempMargAnswers, "Temporal Marginal Contribution"), (shap, shapAnswers, "Shapley Value"), (tempShap, tempShapAnswers,"Temporal Shapley")]
-    for func in functions:
-        #print(func[0], func[1])
-        assert func[0] == test.approx(func[1], rel=1e-3, abs=1e-3), func[2]+" UNIT TEST FAILURE: \n"+str(func[0])+" does not equal "+str(func[1])+"\n"
 
 '''
 Function that creates a unit test from array inputs, utlizes only two instances
@@ -349,7 +321,7 @@ def unitTest(ascores, mscores, tmscores, sscores, tsscores, tOrder):
     functions = [(marg, margAnswers, "Marginal Contribution"), (tempMarg, tempMargAnswers, "Temporal Marginal Contribution"), (shap, shapAnswers, "Shapley Value"), (tempShap, tempShapAnswers,"Temporal Shapley")]
     for func in functions:
         #print(func[0], func[1])
-        assert func[0] == test.approx(func[1], rel=1e-3, abs=1e-3), func[2]+" UNIT TEST FAILURE: \nReturned: "+str(func[0])+" does not equal answer:"+str(func[1])+"\n"
+        assert func[0] == test.approx(func[1], rel=1e-4), func[2]+" UNIT TEST FAILURE: \nReturned: "+str(func[0])+" does not equal answer:"+str(func[1])+"\n"
 
 
 def main():
@@ -362,12 +334,12 @@ def main():
     cmd_line = sys.argv[1:]
     file_name = cmd_line[0]
 
-    #unitTest2()
-    #unitTest(ascores=[1.02,1.02,0.73,0.73,0,0], mscores=[0.29,0,0], tmscores=[0.29, 0.73, 0], sscores=[0.53,0.243,0], tsscores=[0.29,0.73,0], tOrder=[["A1"],["A2","A3"]])
-    #unitTest(ascores=[1.02,0,0.73,0,0,1.31], mscores=[0.29,0, 1.31], tmscores=[0.29, 0.73, 1.31], sscores=[0.655,0.365,1.31], tsscores=[0.29,0.73,1.31], tOrder=[["A1"],["A2","A3"]])
-    #unitTest(ascores=[0.5,0.5,1,0,0,1.0], mscores=[0,0.5,0.5], tmscores=[1,0.5,0.5], sscores=[0.5,0.75,0.75], tsscores=[1,0.5,0.5], tOrder=[["A3"],["A2"],["A1"]])
-    #unitTest(ascores=[0.5,0.5,1,0,0,1.0], mscores=[0,0.5,0.5], tmscores=[1,0.5,0.5], sscores=[0.5,0.75,0.75], tsscores=[1,0.5,0.5], tOrder=[["A3"],["A2"],["A1"]])
-    unitTest(ascores=[1,1,1,1,1,1],mscores=[0,0,0],tmscores=[0,2,0], sscores=[0.5,0.5,0.5], tsscores=[0,2,0], tOrder=[["A1","A3"],["A2"]])
+    
+    unitTest(ascores=[1.02,0,0.73,0,0,1], mscores=[0.29,0,1], tmscores=[0.29, 0, 1], sscores=[0.655,0.365,1], tsscores=[0.655,0.365,1], tOrder=[["A1","A2","A3"]])
+    unitTest(ascores=[1.02,0,0.73,0,0,1.31], mscores=[0.29,0, 1.31], tmscores=[0.29, 0.73, 1.31], sscores=[0.655,0.365,1.31], tsscores=[0.29,0.73,1.31], tOrder=[["A3"],["A1"],["A2"]])
+    unitTest(ascores=[0.5,0.5,1,0,0,1.0], mscores=[0,0.5,0.5], tmscores=[1,0.5,0.5], sscores=[0.5,0.75,0.75], tsscores=[1,0.5,0.5], tOrder=[["A3","A2"],["A1"]])
+    unitTest(ascores=[1,1,1,1,1,1],mscores=[0,0,0],tmscores=[0,0,2], sscores=[0.66666,0.66666,0.66666], tsscores=[0,0,2], tOrder=[["A1","A2"],["A3"]])
+    unitTest(ascores=[1.02,0,0.73,0,0,0], mscores=[0.29,0,0], tmscores=[0.29, 0, 0], sscores=[0.655,0.365,0], tsscores=[0.655,0.365,0], tOrder=[["A1","A2"], ["A3"]])
 
     read_file(file_name, algorithms, instances, scores)
 
@@ -386,11 +358,12 @@ def main():
 
     #outputs are dictioaries, these print them out legiablley
     #print(temp_order)
-    '''for key in shaps.keys():
+    for key in shaps.keys():
         if len(cmd_line) > 1:
-            print(key+":", shaps[key], marges[key], "temporal", temp_shaps[key], temp_marges[key])
+            print(key+":", "\n\tShapley :",shaps[key], "\n\tMarginal Contribution:", marges[key], "\n\tTemporal Shapley:", temp_shaps[key], "\n\tTemporal MC:", temp_marges[key])
         else:
-            print(key+":", shaps[key], marges[key])'''
+            print(key+":", "\n\tShapley :",shaps[key], "\n\tMarginal Contribution:", marges[key])
+
 
 if __name__ == '__main__':
     main()
