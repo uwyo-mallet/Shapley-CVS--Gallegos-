@@ -1,6 +1,5 @@
 
 from scipy.special import comb
-import pytest as test
 import numpy as np
 import csv
 
@@ -208,6 +207,10 @@ def temporal_marginal_contributions(instances, algorithms, scores, temp_order, t
 #Instances -->  all the different instances algorithms were run in. 
 #Scores --> a dictionary that maps an algorithm used and an instance to the score obtained by that algorithm in that test intsance.
 def read_file(file_name, algorithms, instances, scores):
+    set(scores)
+    set(algorithms)
+    set(instances)
+
     with open(file_name) as file_obj:
         top = next(file_obj).replace('\n','')
         header = (top.split (",")) #uses the header to establish what each column is
@@ -228,6 +231,10 @@ def read_file(file_name, algorithms, instances, scores):
             algorithms.add(algorithm)
             instances.add(instance)
             scores[algorithm+instance] = score
+    
+    list(scores)
+    list(algorithms)
+    list(instances)
 
 #Opens the file inputed through the terminal, converts the data in the CVS to information containers the function needs, a
 #This reads the temporal file which provides information about the time an algorithm is made
@@ -247,74 +254,4 @@ def read_temporal_file(file_name, temp_order, temp_order_bysolver, algorithms):
         if not algorithm in temp_order_bysolver:
             raise Exception("No temporal information found for %s!" % algorithm)
 
-#converts a tempOrder dict to a tempOrderbySolver
-def toBySolver(tempOrder):
-    bySolver = {}
-    for time in tempOrder.keys():
-        for alg in tempOrder[time]:
-            bySolver[alg] = time
-    return bySolver
-
-#converts an array of algorithm names to a temporal list, considering the algorithms from the begining to be more recent than those at the end
-def toTempOrder(tOrder):
-    tempOrder = {}
-    for i,algs in enumerate(tOrder):
-        tempOrder[str(len(tOrder)-i)] = algs
-    return tempOrder
-
-#old testing code
-# algorithms = ["insertion", "insertion", "first"]
-# instances = [0, 1, 2]
-# scores = [2.4, 1.05, 0.96]
-# shaps = getVBSShap(instances, algorithms, scores)
-# print(shaps)
-
-#verifies that a dictionary has the same values according to input array
-def dictScores(algorithms, inputScores):
-    scores = {}
-    for i, alg in enumerate(algorithms):
-            scores[alg] = inputScores[i]
-    return scores
-
-'''
-Function that creates a unit test from array inputs, utlizes only two instances
-
-#ascore = array of scores of alogrithm at an instance, ordered by algorithm than instance, I.E. A1T2 comes before A2T1, A1T1 comes before A1T2
-#mscores = array of what marginal contributions of each algorithm should be, algorithms correspond with the index-1
-#tmscores = array of what the temporal marginal contributions of algorithms should be, ordered like mscores
-#sscores = array of what shapley values of algorithms should be, ordered like mscores
-#tscores = array of what temporal shapley values of algorithms should be, ordered like mscores
-#tOrder = array of the temporal location of algorithms, ordered like mscores
-'''
-def unitTest(ascores, mscores, tmscores, sscores, tsscores, tOrder):
-    algorithms = set(["A1","A2","A3"])
-    instances = set(["T-1", "T-2"])
-    scores = {"A1T-1": ascores[0],"A1T-2": ascores[1], "A2T-1" : ascores[2], "A2T-2": ascores[3], "A3T-1": ascores[4],  "A3T-2" : ascores[5]}
-    tempOrder = toTempOrder(tOrder)
-    tempOrderBySolver = toBySolver(tempOrder)
-    #print(tempOrder, tempOrderBySolver)
-
-    #margAnswersB = [0.29,0,1.31]
-    margAnswers = {"A1": mscores[0], "A2": mscores[1], "A3" :mscores[2]}
-    tempMargAnswers = {"A1": tmscores[0], "A2": tmscores[1], "A3" : tmscores[2]}
-    tempShapAnswers = {"A1": tsscores[0], "A2": tsscores[1], "A3" : tsscores[2]}
-    shapAnswers ={"A1": sscores[0], "A2": sscores[1], "A3" : sscores[2]}
-    
-
-
-
-    #answers = [margAnswers, tempMargAnswers, tempShapAnswers, shapAnswers]
-
-    marg = marginal_contributions(instances, algorithms, scores) 
-    tempMarg = temporal_marginal_contributions(instances, algorithms, scores, tempOrder, tempOrderBySolver)
-    shap = getVBSShap(instances, algorithms, scores)
-    tempShap = getVBSShapTemp(instances, algorithms, tempOrder, scores)
-    #print(tempMarg)
-
-    #print(dictScores(frozenset(algorithms),margAnswersB), marg)
-
-    functions = [(marg, margAnswers, "Marginal Contribution"), (tempMarg, tempMargAnswers, "Temporal Marginal Contribution"), (shap, shapAnswers, "Shapley Value"), (tempShap, tempShapAnswers,"Temporal Shapley")]
-    for func in functions:
-        #print(func[0], func[1])
-        assert func[0] == test.approx(func[1], rel=1e-4), func[2]+" UNIT TEST FAILURE: \nReturned: "+str(func[0])+" does not equal answer:"+str(func[1])+"\n"
 

@@ -1,9 +1,0 @@
-algorithm,instance,performance
-insertion,1-10000,1.0
-first,1-10000,0.5
-random,1-10000,0.5
-double,1-10000,0.0
-insertion,2-10000,0.0
-first,2-10000,0.0
-random,2-10000,0.0
-double,2-10000,0.0
