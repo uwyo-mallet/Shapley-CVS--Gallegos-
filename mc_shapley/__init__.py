@@ -1,4 +1,4 @@
-__all__ = ['shapley_cvs', 'temporal_utils', 'test_mc_shapley.py']
+__all__ = ['mc_shapley', 'temporal_utils', 'test_mc_shapley.py']
 
 #from mc_shapley import *
 

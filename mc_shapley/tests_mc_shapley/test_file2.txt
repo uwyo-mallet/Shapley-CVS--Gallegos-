@@ -1,0 +1,7 @@
+algorithm,instance,performance
+insertion,1-10000, 0
+first,1-10000, 0
+random,1-10000, 0.01
+insertion,2-10000, 0
+first,2-10000, 0.96
+random,2-10000, 0.01

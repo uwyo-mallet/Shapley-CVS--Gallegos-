@@ -1,9 +1,10 @@
-
+import csv
 from scipy.special import comb
 import numpy as np
-import csv
+from copy import deepcopy
 
-def getVBSShap(instances, algorithms, scores):
+
+def get_vbs_shap(algorithms, instances, scores):
     '''
     instances - the set of different instances that were solved
     algorithms - the set of available algorithms.
@@ -81,7 +82,7 @@ def getVBSShap(instances, algorithms, scores):
                     #print("-",neg_shap, jalgorithm)
     return shapleys
 
-def getVBSShapTemp(instances, algorithms, temporal_order, scores):
+def get_vbs_shap_temp(algorithms, instances, temporal_order, scores):
     '''
     instances - the set of different instances that were solved.
     algorithms - the set of available algorithms.
@@ -147,20 +148,51 @@ def getVBSShapTemp(instances, algorithms, temporal_order, scores):
 
     return shapleys
 
+#Calculates the Shapley value the typical way, as Shapley intended.
+#Does not utilize MC-nets for speed up, thus on large sets of data it can take a while to return
+#Calculates Shapley value by finding all of the permutations of the set of algorithms
+#Than calcuting the average marginal contribution over all of the permutations, this is done for each algorithm
+#It returns a dictonary that maps the algorithm to it's shapley score
+def traditional_shap(algorithms, instances, scores):
+    shapleys = {}
+    for algorithm in algorithms: 
+        permutations = []
+        n = len(algorithms)
+        permutate_coalitions(algorithm,algorithms, permutations)
+
+        score = 0
+        for perm in permutations:
+
+            with_a = np.sum([max((0 if (scores.get(a+instance) is None) else scores[a+instance]) for a in perm) for instance in instances])
+            perm.remove(algorithm)
+            
+            if not perm:
+                without_a = 0
+            else:
+                without_a = np.sum([max((0 if (scores.get(a+instance) is None) else scores[a+instance]) for a in perm) for instance in instances])
+
+            
+            #print(perm, with_a, " - ", without_a)
+            score += float(with_a - without_a)/float(comb(n-1,len(perm),exact=True))
+        
+        score = score/len(algorithms)
+        shapleys[algorithm] = score
+    return shapleys
+
 #calcultes the marginal contributions for each algorithm
 #can be overloaded to marginal and temporal maginal contributions
-def marginal_contributions(instances, algorithms, scores, temp_order = None, temp_order_bysolver = None, temp_marges = None):
+def marginal_contributions(algorithms, instances, scores, temp_order = None, temp_order_bysolver = None, temp_marges = None):
     marges = {}
     for algorithm in algorithms:
         leftover_algorithms = list(algorithms)
         leftover_algorithms.remove(algorithm)
 
-        all_all_perf = np.sum([max([scores[a+instance] for a in algorithms]) for instance in instances])
+        all_all_perf = np.sum([max(scores[a+instance] for a in algorithms) for instance in instances])
 
         if len(leftover_algorithms) == 0:
             marginal_perf = all_all_perf
         else:
-            marginal_perf = all_all_perf - np.sum([max([scores[a+instance] for a in leftover_algorithms]) for instance in instances])
+            marginal_perf = all_all_perf - np.sum([max(scores[a+instance] for a in leftover_algorithms) for instance in instances])
         
         marges[algorithm] = marginal_perf
 
@@ -172,19 +204,19 @@ def marginal_contributions(instances, algorithms, scores, temp_order = None, tem
             other_algorithms = list(available_algorithms)
             other_algorithms.remove(algorithm)
 
-            all_perf =  np.sum([max([scores[a+instance] for a in available_algorithms]) for instance in instances])
+            all_perf =  np.sum([max(scores[a+instance] for a in available_algorithms) for instance in instances])
             if len(other_algorithms) == 0:
                 tmp_marginal_perf = all_perf
             else:
-                tmp_marginal_perf = all_perf - np.sum([max([scores[a+instance] for a in other_algorithms]) for instance in instances])
+                tmp_marginal_perf = all_perf - np.sum([max(scores[a+instance] for a in other_algorithms) for instance in instances])
         
             temp_marges[algorithm] = tmp_marginal_perf
     return marges
 
 #calculates the temporal marginal contributions for each algorithm
 #just calculates the temporal marginal contributions
-def temporal_marginal_contributions(instances, algorithms, scores, temp_order, temp_order_bysolver):
-    tempMarges = {}
+def temporal_marginal_contributions(algorithms, instances, scores, temp_order, temp_order_bysolver):
+    temp_marges = {}
     for algorithm in algorithms:
         thisversion = temp_order_bysolver[algorithm]
         versions = [y for y in temp_order.keys() if y <= thisversion]
@@ -193,23 +225,24 @@ def temporal_marginal_contributions(instances, algorithms, scores, temp_order, t
         other_algorithms = list(available_algorithms)
         other_algorithms.remove(algorithm)
 
-        all_perf = np.sum([max([scores[a+instance] for a in available_algorithms]) for instance in instances])
+        all_perf = np.sum([max(scores[a+instance] for a in available_algorithms) for instance in instances])
         if len(other_algorithms) == 0:
             tmp_marginal_perf = all_perf
         else:
-            tmp_marginal_perf = all_perf - np.sum([max([scores[a+instance] for a in other_algorithms]) for instance in instances])
+            tmp_marginal_perf = all_perf - np.sum([max(scores[a+instance] for a in other_algorithms) for instance in instances])
         
-        tempMarges[algorithm] = tmp_marginal_perf
-    return tempMarges
+        temp_marges[algorithm] = tmp_marginal_perf
+    return temp_marges
 
 #Opens the file inputed through the terminal, converts the data in the CVS to information containers the function needs, a
 #Algorithms --> gathers all the names of the different algorithms that will be evaluated.
 #Instances -->  all the different instances algorithms were run in. 
 #Scores --> a dictionary that maps an algorithm used and an instance to the score obtained by that algorithm in that test intsance.
-def read_file(file_name, algorithms, instances, scores):
-    set(scores)
-    set(algorithms)
-    set(instances)
+#returns an array of each list in the order, [algortihms, instances, scores]
+def read_file(file_name):
+    scores = {}
+    algorithms = set()
+    instances = set()
 
     with open(file_name) as file_obj:
         top = next(file_obj).replace('\n','')
@@ -223,25 +256,30 @@ def read_file(file_name, algorithms, instances, scores):
 
         for n, row in enumerate(data):
             if row[a] == "" or row[i] == "" or row[p] == "":
-                raise Exception("Missing Data Entry in Row: %s" % n)
+                raise ValueError("Missing Data Entry in Row: %d" % (n+2))
+            
             algorithm = row[a]
             instance = row[i]
             score = float(row[p])
 
             algorithms.add(algorithm)
             instances.add(instance)
-            scores[algorithm+instance] = score
-    
-    list(scores)
-    list(algorithms)
-    list(instances)
+            if scores.get(algorithm+instance) is None:
+                scores[algorithm+instance] = score
+            elif scores[algorithm+instance] != score:
+                raise ValueError("Two Different Scores for the Same Algorithm-Instance, Start at Row: %d" % (n+2))
+
+    return [list(algorithms), list(instances), scores]
 
 #Opens the file inputed through the terminal, converts the data in the CVS to information containers the function needs, a
 #This reads the temporal file which provides information about the time an algorithm is made
 #This time is used to attribute more or less credit to an algorithm for how much it contributed at that time
-#temp_order: The algorithm maps to a time (version)
-#temp_order by sover: time(version) maps to to algorithm
-def read_temporal_file(file_name, temp_order, temp_order_bysolver, algorithms):
+#temp_order by solver: The algorithm maps to a time (version)
+#temp_order: time(version) maps to to algorithm
+def read_temporal_file(file_name, algorithms):
+    temp_order = {}
+    temp_order_bysolver = {}
+
     with open(file_name, 'r') as f:
         reader = csv.DictReader(f)
         #print(reader)
@@ -252,6 +290,24 @@ def read_temporal_file(file_name, temp_order, temp_order_bysolver, algorithms):
             temp_order_bysolver[row['solver']] = row['version']
     for algorithm in algorithms:
         if not algorithm in temp_order_bysolver:
-            raise Exception("No temporal information found for %s!" % algorithm)
+            raise ValueError("No temporal information found for %s!" % algorithm)
+    return [temp_order, temp_order_bysolver]
+
+#permutes all the possible subsets of algorithms that includes the inputed algorithm
+#Can also be interpreted as generating all the joining orders up to the inputed algorithm of coalitions
+def permutate_coalitions(algorithm, left, results):
+        if not (left in results):
+            results.append(deepcopy(left))
+
+        if len(left) == 1:
+            return results
+        
+        #leftover = [a for a in left if a != algorithm]
+        for a in left: 
+            if a != algorithm:
+                leftover = deepcopy(left)
+                leftover.remove(a)
+                permutate_coalitions(algorithm, leftover, results)
+        
 
 
