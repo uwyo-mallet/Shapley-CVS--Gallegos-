@@ -14,4 +14,4 @@ jobs:
             - run: pwd
             - run: cd mc_shapley
             - run: pwd
-            - run: pytest
+            - run: pytest mc_shapley
