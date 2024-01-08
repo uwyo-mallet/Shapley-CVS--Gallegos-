@@ -14,4 +14,4 @@ jobs:
               run: pip install -r requirements.txt
             - name: pytesting new implementation
               working-directory: ./mc_shapley
-              run: ls
+              run: pytest tests_mc_shapley
