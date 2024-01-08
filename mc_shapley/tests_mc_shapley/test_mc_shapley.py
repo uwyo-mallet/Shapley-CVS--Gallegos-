@@ -84,7 +84,7 @@ def test_readfile_1():
         instances = set(["1-1", "1-2"])
         scores = {"A11-1": 1.02, "A21-1": 0.73, "A31-1": 0.3, "A11-2": 1.0, "A21-2": 0.5, "A31-2": 0.21}
 
-        ais = shapley_cvs.read_file(".\\tests_mc_shapley\\test_file1.txt")
+        ais = shapley_cvs.read_file(".\\test_file1.txt")
         assert set(ais[0]) == algorithms, "Algorithms were not read properly: " + str(ais[0]) + " does not equal " + str(algorithms)
         assert set(ais[1]) == instances, "Instances were not read in properly: " + str(ais[1]) + " does not equal " + str(instances)
         assert ais[2] == scores, 'Score dictionary is malformed: ' + str(ais[2]) + " does not equal " + str(scores)
