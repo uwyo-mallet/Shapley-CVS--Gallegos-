@@ -13,4 +13,5 @@ jobs:
             - run: pip install -r requirements.txt
             - run: pwd
             - run: cd mc_shapley
+            - run: pwd
             - run: pytest
