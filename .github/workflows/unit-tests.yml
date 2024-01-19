@@ -13,6 +13,6 @@ jobs:
             - name: install requirements 
               run: pip install -r requirements.txt
             - name: runinng pytest implementation
-              working-directory: ${{ github.action_repository }}/mc_shapley
+              working-directory: ./mc_shapley
               run: ls 
               
