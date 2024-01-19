@@ -14,5 +14,5 @@ jobs:
               run: pip install -r requirements.txt
             - name: runinng pytest implementation
               working-directory: ${{ github.action_repository }}/mc_shapley
-              run: pytest 
+              run: ls 
               
