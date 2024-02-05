@@ -8,5 +8,5 @@ Required Packages: Scipy, Pytest (if you want to run the library’s tests)
 Useful Links: 
 - https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/ieong05mcnet.pdf
 - https://www.eecs.uwyo.edu/~larsko/papers/kotthoff_quantifying_2018.pdf
-- 10440-Article Text-13968-1-2-20201228.pdf
+- [10440-Article Text-13968-1-2-20201228.pdf](https://cdn.aaai.org/ojs/10440/10440-13-13968-1-2-20201228.pdf)https://cdn.aaai.org/ojs/10440/10440-13-13968-1-2-20201228.pdf
   
