@@ -266,8 +266,8 @@ def read_file(file_name):
             instances.add(instance)
             if scores.get(algorithm+instance) is None:
                 scores[algorithm+instance] = score
-            elif scores[algorithm+instance] != score:
-                raise ValueError("Two Different Scores for the Same Algorithm-Instance, Start at Row: %d" % (n+2))
+            else:
+                raise ValueError("duplicate entries, Start at Row: %d" % (n+2))
 
     return [list(algorithms), list(instances), scores]
 
