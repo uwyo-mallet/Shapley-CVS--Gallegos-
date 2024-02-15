@@ -127,7 +127,7 @@ def test_missing_entry():
 def test_score_conflict():
     with test.raises(ValueError) as exc_info: 
         shapley_cvs.read_file("./tests_mc_shapley/test_file5.csv")
-    assert str(exc_info.value) == "Two Different Scores for the Same Algorithm-Instance, Start at Row: 17", "Failed to raise proper exception: " 
+    assert str(exc_info.value) == "duplicate entries, Start at Row: 17", "Failed to raise proper exception: " 
 
 def test_temporal_missing(): 
     algorithms = ["A1", "A2", "A3", "A4", "A5"]
