@@ -8,8 +8,8 @@ The input csv file for read_file(file_name) has 3 columns: Algorithm, Instance, 
 
 Example File: 
 
-`
-    file name: "Sorting_Scores"
+
+        file name: "Sorting_Scores"
 
         Algorithm, Instance, Score
         A          B         C
@@ -17,7 +17,7 @@ Example File:
         Insertion  Mixed     11
         Quicksort  Ordered   10
         Insertion  Ordered   10
-`
+
 
 Code Example:
 
