@@ -17,7 +17,8 @@ file name: "Sorting_Scores"
         Quicksort  Mixed     20
         Insertion  Mixed     11
         Quicksort  Ordered   10
-        Insertion  Ordered   10`
+        Insertion  Ordered   10
+`
 
 Code Example:
 
