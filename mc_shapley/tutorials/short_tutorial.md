@@ -1,6 +1,6 @@
 A short tutorial explaining what are and how to use the promiment functions in the library. For further details about the theory refer to the attached references. 
 
-# read_file(file_name)
+## read_file(file_name)
 
 The read_file function reads in a csv file and returns a list containing three lists. At index 0 is the list of algorithms, at index 1 is the list of the different instances each algortihm perfomed in, at index 3 is a dictionary that maps an algorithm and an instance to a score. The score being the algortihms stated performance within that instance. 
 
