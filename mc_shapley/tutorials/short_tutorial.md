@@ -9,6 +9,7 @@ The input csv file for read_file(file_name) has 3 columns: Algorithm, Instance, 
 Example File: 
 
 `
+
 file name: "Sorting_Scores"
 
         Algorithm, Instance, Score
@@ -31,9 +32,11 @@ Code Example:
 
 Example Output:
 
-    `Algorithms [Quicksort, Insertion]
+    `
+    Algorithms [Quicksort, Insertion]
     Instance [Mixed, Ordered]
-    Score {QuicksortMixed : 20, InsertionMixed : 11, QuicksortOrdered : 10, InsertionOrdered : 10}`
+    Score {QuicksortMixed : 20, InsertionMixed : 11, QuicksortOrdered : 10, InsertionOrdered : 10}
+    `
 
 
 
