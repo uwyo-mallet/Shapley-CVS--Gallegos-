@@ -82,7 +82,7 @@ def get_vbs_shap(algorithms, instances, scores):
                     #print("-",neg_shap, jalgorithm)
     return shapleys
 
-def get_vbs_shap_temp(algorithms, instances, temporal_order, scores):
+def get_vbs_shap_temp(algorithms, instances, scores, temporal_order):
     '''
     instances - the set of different instances that were solved.
     algorithms - the set of available algorithms.

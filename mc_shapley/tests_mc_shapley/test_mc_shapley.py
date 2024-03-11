@@ -45,7 +45,7 @@ def unitTestTemplate(ascores, mscores, tmscores, sscores, tsscores, tOrder):
     marg = shapley_cvs.marginal_contributions(algorithms, instances, scores) 
     tempMarg = shapley_cvs.temporal_marginal_contributions(algorithms, instances, scores, tempOrder, tempOrderBySolver)
     shap = shapley_cvs.get_vbs_shap(algorithms, instances, scores)
-    tempShap = shapley_cvs.get_vbs_shap_temp(algorithms, instances, tempOrder, scores)
+    tempShap = shapley_cvs.get_vbs_shap_temp(algorithms, instances, scores, tempOrder)
 
     tradShap = shapley_cvs.traditional_shap(algorithms, instances, scores)
     #print(tempMarg)
