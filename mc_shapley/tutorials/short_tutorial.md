@@ -8,9 +8,7 @@ The read_file function reads in a csv file and returns a list containing three m
 
 The input csv file for read_file(file_name) has 3 columns: Algorithm, Instance, Performance. Each row is interpreted as the Perfomance C of the algorithm A within instance B. 
 
-Example File: 
-
-        file name: "Sorting_Performances.csv"
+Example File:  "Sorting_Performances.csv"
 
             algorithm, instance, performance
             Quicksort  Mixed     20
@@ -31,7 +29,6 @@ Code Example:
 
 
 Example Output:
-
     
     Algorithms [Quicksort, Insertion]
     Instance [Mixed, Ordered]
@@ -45,7 +42,7 @@ The function returns a list containing two dictionaries. The dictionary at index
 
 The input file is constructed using two headers, denoting each column. The first header is version and the second header is solver. All listed in the version header are points in time and those listed under the solver are the algorithms associated with that time. 
 
-Example File: 
+Example File: "Sorting_Temporal.csv"
 
         version, solver
         1900     insertion
