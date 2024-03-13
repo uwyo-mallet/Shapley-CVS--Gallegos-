@@ -34,7 +34,7 @@ Example Output:
     Instance [Mixed, Ordered]
     Performance {QuicksortMixed : 20, InsertionMixed : 11, QuicksortOrdered : 10, InsertionOrdered : 10}
 
-## Read_Temporal_File
+## read_temporal_file(file_name, algorithms)
 
 The read_temporal_file function is used for reading in a csv file with temporal data. The temporal data is used to associate an algorithm (solver) with a time (version). Algorithms associated with lower values of time are assumed to have existed before those with higher values of time. This distincion is important when applying the temporal functions included in the library. The function also takes an input of a list of algorithms, this list is used to verify that the temporal file is not missing any information nor including additional algorithms.
 
