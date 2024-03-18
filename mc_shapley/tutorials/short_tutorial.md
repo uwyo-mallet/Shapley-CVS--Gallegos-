@@ -20,7 +20,7 @@ Example File:  "Sorting_Performances.csv"
 Code Example:
 
     import mc_shapley as shap
-    output = read_file("Sorting_Performances.csv")
+    output = shap.read_file("Sorting_Performances.csv")
 
     print("Algorithms", output[0])
     print("Instances", output[1])
@@ -109,6 +109,7 @@ Code Example:
         print("Temporal Marginal Contributions", TMC)
         print("Temporal Shapley Value", TSV)
 
-Example Output: 
+Example Output:
+
         Temporal Marginal Contributions {'Insertion': 21.0, 'Quicksort': 9.0}
         Temporal Shapley Value {'Insertion': 21.0, 'Quicksort': 9.0}
