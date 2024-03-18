@@ -4,7 +4,7 @@ A short tutorial explaining what are and how to use the promiment functions in t
 
 ## read_file(file_name)
 
-The read_file function reads in a csv file and returns a list containing three more lists. At index 0 is the list of algorithms, at index 1 is the list of the different instances each algortihm perfomed in, at index 3 is a dictionary that maps an algorithm and an instance to a performance. The performance being the algortihm's stated performance within that instance. 
+The read_file function reads in a csv file and returns a list containing three more lists. At index 0 is the list of algorithms, at index 1 is the list of the different instances each algortihm perfomed in, at index 3 is the performance of the algorithm on the instance.
 
 The input csv file for read_file(file_name) has 3 columns: Algorithm, Instance, Performance. Each row is interpreted as the perfomance C of the algorithm A within instance B. 
 
