@@ -11,7 +11,7 @@ A short tutorial explaining what are and how to use the promiment functions in t
 
 ## read_file(file_name)
 
-The read_file function reads in a csv file and returns a list containing three lists. At index 0 is the list of algorithms, at index 1 is the list of the different instances each algortihm perfomed in, at index 3 is a dictionary that maps an algorithm and an instance to a Performance. The Performance being the algortihms stated performance within that instance. 
+The read_file function reads in a csv file and returns a list containing three lists. At index 0 is the list of algorithms, at index 1 is the list of the different instances each algortihm perfomed in, at index 3 is a dictionary that maps an algorithm and an instance to a Performance. The Performance being the algortihms stated performance within that instance, generally assumed that high performance is better.
 
 The input csv file for read_file(file_name) has 3 columns: Algorithm, Instance, Performance. Each row is interpreted as the Perfomance C of the algorithm A within instance B. 
 
@@ -45,6 +45,32 @@ Example Output:
     Instance [Mixed, Ordered]
     Performance {QuicksortMixed : 20, InsertionMixed : 11, QuicksortOrdered : 10, InsertionOrdered : 10}
 
+## Non-Temporal Functions
+
+There are three non-temporal functions in the library: marginal_contributions, traditional_shap, get_vbs_shap. They all take the same arguements. A list of algorithms, A list of instances, and a dictionary of Performances (called scores), specifically the output of the *read_file* function. The marginal_contributions function returns a dictionary that maps algorithms to their marginal_contributions regarding the coallition of all of the algorithms in the list. The traditional_shap and get_vbs_shap functions return a dictionary that maps algorithms to their shapely value for the coalition of all the algorithms in the list. The difference between the traditional_shap and get_vbs_shap functions is that the get_vbs_shap function uses MC-Nets reduce the complexity of calculating the shapely value to P. Therefore it is recommended to use the traditional_shap on small inputs or for testing. If you want to know more about how MC-Nets reduce the shaple value's complexity, check out the references. 
+
+Code Example: 
+
+        import mc_shapley as shap
+
+        output = shap.read_file("Sorting_Performance")
+
+        MC = shap.marginal_contributions(output[0], output[1], output[2])
+        SV1 = shap.traditional_shap(output[0], output[1], output[2])
+        SV2 = shap.get_vbs_shap(output[0], output[1], output[2])
+
+        print("Marginal Contributions", MC)
+        print("Shapley Value")
+        print("\tTraditional", SV1)
+        print("\tMC-net", SV2)
+
+Example Output:
+
+        Marginal Contributions {'Quicksort': 9.0, 'Insertion': 0.0}
+        Shapley Value
+                Traditional {'Quicksort': 19.5, 'Insertion': 10.5}
+                MC-net {'Quicksort': 19.5, 'Insertion': 10.5}
+
 ## Read_Temporal_File
 
 The read_temporal_file function is used for reading in a csv file with temporal data. The temporal data is used to associate an algorithm (solver) with a time (version). Algorithms associated with lower values of time are assumed to have existed before those with higher values of time. This distincion is important when applying the temporal functions included in the library. The function also takes an input of a list of algorithms, this list is used to verify that the temporal file is not missing any information nor including additional algorithms.
@@ -75,32 +101,6 @@ Example Output:
         Temp to Solver {'1900': ['Insertion'], '1961': ['Quicksort']}
         Solver to Temp {'Insertion': '1900', 'Quicksort': '1961'}
 
-## Non-Temporal Functions
-
-There are three non-temporal functions in the library: marginal_contributions, traditional_shap, get_vbs_shap. They all take the same arguements. A list of algorithms, A list of instances, and a dictionary of Performances (called scores), specifically the output of the *read_file* function. The marginal_contributions function returns a dictionary that maps algorithms to their marginal_contributions regarding the coallition of all of the algorithms in the list. The traditional_shap and get_vbs_shap functions return a dictionary that maps algorithms to their shapely value for the coalition of all the algorithms in the list. The difference between the traditional_shap and get_vbs_shap functions is that the get_vbs_shap function uses MC-Nets reduce the complexity of calculating the shapely value to P. Therefore it is recommended to use the traditional_shap on small inputs or for testing. If you want to know more about how MC-Nets reduce the shaple value's complexity, check out the references. 
-
-Code Example: 
-
-        import mc_shapley as shap
-
-        output = shap.read_file("Sorting_Performance")
-
-        MC = shap.marginal_contributions(output[0], output[1], output[2])
-        SV1 = shap.traditional_shap(output[0], output[1], output[2])
-        SV2 = shap.get_vbs_shap(output[0], output[1], output[2])
-
-        print("Marginal Contributions", MC)
-        print("Shapley Value")
-        print("\tTraditional", SV1)
-        print("\tMC-net", SV2)
-
-Example Output:
-
-        Marginal Contributions {'Quicksort': 9.0, 'Insertion': 0.0}
-        Shapley Value
-                Traditional {'Quicksort': 19.5, 'Insertion': 10.5}
-                MC-net {'Quicksort': 19.5, 'Insertion': 10.5}
-
 ## Temporal Functions
 There are two temporal functions in the library: temporal_marginal_contributions, and get_vbs_shap_temp. The temporal functions behave the same to their non-temporal counterparts, except the value these functions give algorithms is also influenced by time they are associated with (often the time they were invented). If you want to know more details about how exactly time is used in the temporal functions calculations, please refer to the references. 
 
@@ -124,7 +124,7 @@ Example Output:
         Temporal Marginal Contributions {'Insertion': 21.0, 'Quicksort': 9.0}
         Temporal Shapley Value {'Insertion': 21.0, 'Quicksort': 9.0}
 
-# Useful Links: 
+# Useful Links and References: 
 - https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/ieong05mcnet.pdf
 - https://www.eecs.uwyo.edu/~larsko/papers/kotthoff_quantifying_2018.pdf
 - [10440-Article Text-13968-1-2-20201228.pdf](https://cdn.aaai.org/ojs/10440/10440-13-13968-1-2-20201228.pdf)https://cdn.aaai.org/ojs/10440/10440-13-13968-1-2-20201228.pdf
