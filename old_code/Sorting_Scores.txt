@@ -1,0 +1,5 @@
+algorithm,instance,performance
+Quicksort,Mixed,20
+Insertion,Mixed,11
+Quicksort,Ordered,10
+Insertion,Ordered,10

@@ -1,0 +1,60 @@
+Text file contains different results, helpful for comparison, will be intergrated into unit tests.
+
+Primary Example
+random   	    816632.90101
+first    	    815927.93023
+insertion  	    340.07511
+dual pivot      816990.39096
+mid	   	    816666.76208
+median 3 	    816651.35385
+median 9 	    816632.62196
+median 3 random 816599.97215
+median 9 random 816588.45264
+
+Shapley value input of orginal code when no metric is given
+insertion 890.2222222223479
+first 890.2222222220843
+median 9 random 890.2222222220843
+mid 890.2222222220844
+random 890.2222222220904
+median 9 890.2222222223479
+median 3 random 890.2222222223479
+dual pivot 890.2222222223479
+median 3 890.2222222223479
+
+Shapley value input of now input for new code without given metric, the only mismatch, when metric is applied the two codes produce the same outcome
+'first': 4257.199575396776, 'dual pivot': 162.05563492063015, 'mid': 203.92200396824757, 'median 9 random': 322.48131349204084, 'median 3 random': 282.77771825395604, 'median 3': 209.393373015873, 'random': 221.7253611111027, 'median 9': 221.2026349206228, 'insertion': 6528598.65238457
+
+All Equal Testing Info 
+
+First Test, testing if CVS Shap and Original Shap share the same answers
+
+CVS Shap
+random: 0.475 0.0 temporal 0.0 0.0
+insertion: 0.49 0.010000000000000009 temporal 0.97 0.97
+first: 0.005 0.0 temporal 0.0 0.0
+
+OG Shap
+insertion,1946,0.49000,0.97000,0.97000,0.01000,0.97000
+first,1961,0.00500,0.00000,0.01000,0.00000,0.00000
+random,1961,0.47500,0.00000,0.95000,0.00000,0.00000
+
+They match. Time to go for the real test. When all scores across all instances is 1. 
+
+CVS Shap
+insertion,1946,0.49000,0.97000,0.97000,0.01000,0.97000
+first,1961,0.00500,0.00000,0.01000,0.00000,0.00000
+random,1961,0.47500,0.00000,0.95000,0.00000,0.00000
+
+OG Shap
+insertion,1946,0.66667,2.00000,2.00000,0.00000,2.00000
+random,1961,0.66667,0.00000,2.00000,0.00000,0.00000
+first,1961,0.66667,0.00000,2.00000,0.00000,0.00000
+
+They match, but they are both wrong. What if all the answers are a different number like 0.5. 
+
+Still wrong. If the scores for the algorithms are the same for all algorithms the Shapley value will come out as wrong. Typically, it would calcualte the shapley value excluding the marginal contribution of the algorithm in a set alone. Although this could be coincidence. 
+
+Tested with neg=n-i-1 to neg=n-i. The answers started coming out as correct if all the scores are the same, but incorrect for when scores are different. 
+
+I am going to test varied equal scores to see how many scores must be in common before the algorithm makes a miscalculation. 

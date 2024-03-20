@@ -1,0 +1,3 @@
+version,solver
+1900,Insertion
+1961,Quicksort
