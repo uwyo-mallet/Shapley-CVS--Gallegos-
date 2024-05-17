@@ -4,7 +4,7 @@ import numpy as np
 from copy import deepcopy
 
 
-def get_vbs_shap(algorithms, instances, scores):
+def get_vbs_shap(algorithms, instances, scores, invp = False):
     '''
     instances - the set of different instances that were solved
     algorithms - the set of available algorithms.
@@ -19,6 +19,10 @@ def get_vbs_shap(algorithms, instances, scores):
     m = len(instances)
 
     shapleys = {}
+
+    #if true, invert the proportion of the scores so that smaller scores are now greater.
+    if invp:
+        scores = inverse_proportion(scores)
 
     d = 0
     #For each instance
@@ -82,7 +86,7 @@ def get_vbs_shap(algorithms, instances, scores):
                     #print("-",neg_shap, jalgorithm)
     return shapleys
 
-def get_vbs_shap_temp(algorithms, instances, scores, temporal_order):
+def get_vbs_shap_temp(algorithms, instances, scores, temporal_order, invp = False):
     '''
     instances - the set of different instances that were solved.
     algorithms - the set of available algorithms.
@@ -96,6 +100,10 @@ def get_vbs_shap_temp(algorithms, instances, scores, temporal_order):
     '''
 
     shapleys = {alg: 0 for alg in algorithms}
+
+    #if true, invert the proportion of the scores so that smaller scores are now greater.
+    if invp:
+        scores = inverse_proportion(scores)
 
     n = len(algorithms)
 
@@ -153,8 +161,13 @@ def get_vbs_shap_temp(algorithms, instances, scores, temporal_order):
 #Calculates Shapley value by finding all of the permutations of the set of algorithms
 #Than calcuting the average marginal contribution over all of the permutations, this is done for each algorithm
 #It returns a dictonary that maps the algorithm to it's shapley score
-def traditional_shap(algorithms, instances, scores):
+def traditional_shap(algorithms, instances, scores, invp = False):
     shapleys = {}
+
+    #if true, invert the proportion of the scores so that smaller scores are now greater.
+    if invp:
+        scores = inverse_proportion(scores)
+    
     for algorithm in algorithms: 
         permutations = []
         n = len(algorithms)
@@ -181,8 +194,13 @@ def traditional_shap(algorithms, instances, scores):
 
 #calcultes the marginal contributions for each algorithm
 #can be overloaded to marginal and temporal maginal contributions
-def marginal_contributions(algorithms, instances, scores, temp_order = None, temp_order_bysolver = None, temp_marges = None):
+def marginal_contributions(algorithms, instances, scores, temp_order = None, temp_order_bysolver = None, temp_marges = None, invp = False):
     marges = {}
+
+    #if true, invert the proportion of the scores so that smaller scores are now greater.
+    if invp:
+        scores = inverse_proportion(scores)
+
     for algorithm in algorithms:
         leftover_algorithms = list(algorithms)
         leftover_algorithms.remove(algorithm)
@@ -215,7 +233,11 @@ def marginal_contributions(algorithms, instances, scores, temp_order = None, tem
 
 #calculates the temporal marginal contributions for each algorithm
 #just calculates the temporal marginal contributions
-def temporal_marginal_contributions(algorithms, instances, scores, temp_order, temp_order_bysolver):
+def temporal_marginal_contributions(algorithms, instances, scores, temp_order, temp_order_bysolver, invp = False):
+
+    #if true, invert the proportion of the scores so that smaller scores are now greater.
+    if invp:
+        scores = inverse_proportion(scores)        
     temp_marges = {}
     for algorithm in algorithms:
         thisversion = temp_order_bysolver[algorithm]
@@ -309,5 +331,13 @@ def permutate_coalitions(algorithm, left, results):
                 leftover.remove(a)
                 permutate_coalitions(algorithm, leftover, results)
         
-
-
+#Returns a new scores dictinary where those with lower scores now have higher scores
+#This function is used to translate scores in which lower values are considred better, such as time to solve
+def inverse_proportion(scores):
+    newScores = deepcopy(scores)
+    maxScore = max(scores, key = scores.get)
+    
+    for key in scores:
+        newScores[key] = scores[maxScore] - scores[key]
+    
+    return newScores

@@ -1,3 +1,10 @@
+#MC Shapley CSV
+A package that is used to run Shapley value variations useful for research on CSV file. The package includes MC-Net Shapley which runs in polynomial time and Temporal Shapley which gives favor to coalition members on both performance and precedents. Both rely on certain assumptions, to learn more check the references. The library is divided into two subsections: The mcshapley.shaps which contains all of the Shapley functions as well as other useful acreditation functions such as marginal contribution and the mcshapley.temporalUtils that contains utilities useful for manipulating temporally ordered dictionaries. 
+
+Version: 0.0.2v
+
+Required Packages: Scipy, Pytest (if you want to run the library’s tests)
+
 # Short Tutorials
 
 A short tutorial explaining what are and how to use the promiment functions in the library. For further details about the theory refer to the attached references. 

@@ -79,6 +79,16 @@ def test_traditional():
     [algorithms, instances, scores] = shapley_cvs.read_file("./tests_mc_shapley/test_file2.txt") 
     assert shapley_cvs.traditional_shap(algorithms, instances, scores) == test.approx(shapley_cvs.get_vbs_shap(algorithms, instances, scores), rel=1e-4)
 
+def test_better():
+    scores = {'a ': 1, 'b' : 2, 'c' : 3, 'd' : 4, 'e' : 5, 'f' : 10}
+    newScores = shapley_cvs.inverse_proportion(scores)
+    assert newScores == {'a ': 9, 'b' : 8, 'c' : 7, 'd' : 6, 'e' : 5, 'f' : 0}
+
+def test_flag():
+    [algorithms, instances, scores] = shapley_cvs.read_file("./tests_mc_shapley/test_file2.txt") 
+    newScores = shapley_cvs.inverse_proportion(scores)
+    assert shapley_cvs.get_vbs_shap(algorithms, instances, newScores) == test.approx(shapley_cvs.get_vbs_shap(algorithms, instances, scores, invp=True), rel=1e-4)
+
 def test_readfile_1(): 
         algorithms = set(["A1", "A2", "A3"])
         instances = set(["1-1", "1-2"])
@@ -134,3 +144,9 @@ def test_temporal_missing():
     with test.raises(ValueError) as exc_info: 
         shapley_cvs.read_temporal_file("./tests_mc_shapley/temp_test_file3.csv", algorithms)
     assert str(exc_info.value) == "No temporal information found for A5!", "Failed to raise proper exception: " 
+
+def test_kotthoff():
+    [algorithms, instances, scores] = shapley_cvs.read_file("./tests_mc_shapley/test_file_park.csv") 
+    shapleys = shapley_cvs.get_vbs_shap(algorithms, instances, scores, invp=False)
+    print(shapleys)
+    assert shapleys == test.approx({'qsort4': 0, '1978 + cutoff + median 3': 0, '1993 + median 9 + split end': 0, '1993 + median 9': 0, '2009': 0}, rel=1e-4)

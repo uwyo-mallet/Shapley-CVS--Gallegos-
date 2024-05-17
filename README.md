@@ -29,7 +29,7 @@ Example File:
 
 Code Example:
 
-    import mc_shapley as shap
+    import mcshapley.shaps as shap
     output = read_file("Sorting_Performances.csv")
 
     print("Algorithms", output[0])
@@ -51,7 +51,7 @@ There are three non-temporal functions in the library: marginal_contributions, t
 
 Code Example: 
 
-        import mc_shapley as shap
+        import mcshapley.shaps as shap
 
         output = shap.read_file("Sorting_Performance")
 
@@ -87,7 +87,7 @@ Example File:
 
 Code Example:
 
-        import mc_shapley as shap
+        import mcshapley.shaps as shap
 
         output = shap.read_file("Sorting_Performances.csv")
 
@@ -107,7 +107,7 @@ There are two temporal functions in the library: temporal_marginal_contributions
 The temporal functions have the same arguements as the non-temporal: algorithms, instances, scores. They also have additional arguements the tempOrder tables. These are the outputs from the read_temporal_file function. They are tables that either map algorithms to times (tempOrder) or time to algorithms (tempOrderBySolver). 
 
 Code Example: 
-        import mc_shapley as shap
+        import mcshapley.shaps as shap
 
         output = shap.read_file("Sorting_Performances.csv") #returns [list of algorithms, list of instances, dictionary of scores]
         
@@ -123,6 +123,24 @@ Code Example:
 Example Output: 
         Temporal Marginal Contributions {'Insertion': 21.0, 'Quicksort': 9.0}
         Temporal Shapley Value {'Insertion': 21.0, 'Quicksort': 9.0}
+
+## Temporal Utility Functions
+The temporal utility functions are found in the mcshapley.temporalUtils section of the library. This section is for functions that are useful for manipulating temporal dictionaries. These functions are hidden within the temporal functions in the mcshapley.shaps section. As of now the section only includes two functions. toTempOrder which takes a list of lists (typically a list of solver names) and creates a temporal dictionary. toTempOrder associates the sequential order of the parent list to determine which is earlier, specifically groups that come earlier in the list are associated with earlier times. toBySolve takes a temporal dictionary in the form of toTempOrder's output and converts it so that each solver name in the dictionary maps to it's associated time. 
+
+Code Example:
+
+        import mcshapley.temporalUtils as tUtils
+        tOrder = tOrder=[["A3","A2"],["A1"]]
+
+        tempOrder = tUtils.toTempOrder(tOrder)
+        tempOrderBySolver = tUtils.toBySolver(tempOrder)
+
+        print(tempOrder)
+        print(tempOrderBySolver)
+
+Example Output:
+        {'2': ['A3', 'A2'], '1': ['A1']} 
+        {'A3': '2', 'A2': '2', 'A1': '1'}
 
 # Useful Links and References: 
 - https://www.microsoft.com/en-us/research/wp-content/uploads/2005/01/ieong05mcnet.pdf

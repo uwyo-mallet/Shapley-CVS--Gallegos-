@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcshapley"
+version = "0.0.2"
+authors = [
+  { name="Nikita A. Gallegos", email="nikitaagallegos@gmail.com" },
+]
+description = "A package that is used to run Shapley value variations useful for research on CSV file. The package includes MC-Net Shapley which runs in polynomial time and Temporal Shapley which gives favor to coalition members on both performance and precedents. Both rely on certain assumptions, to learn more check the references."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research"
+]
+dependencies = [
+  'scipy',
+  'numpy'
+]
+
+[project.optional-dependencies]
+tests = [
+  'pytest'
+]
+
+[project.urls]
+Homepage = "https://github.com/uwyo-mallet/Shapley-CVS--Gallegos-"
+Issues = "https://github.com/uwyo-mallet/Shapley-CVS--Gallegos-/issues"
