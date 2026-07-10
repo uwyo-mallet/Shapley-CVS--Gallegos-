@@ -261,7 +261,8 @@ def temporal_marginal_contributions(algorithms, instances, scores, temp_order, t
 #Instances -->  all the different instances algorithms were run in. 
 #Scores --> a dictionary that maps an algorithm used and an instance to the score obtained by that algorithm in that test intsance.
 #returns an array of each list in the order, [algortihms, instances, scores]
-def read_file(file_name):
+def read_file(file_name, algorithm_header="algorithm",
+              instance_header="instance", performance_header="performance"):
     scores = {}
     algorithms = set()
     instances = set()
@@ -269,9 +270,9 @@ def read_file(file_name):
     with open(file_name) as file_obj:
         top = next(file_obj).replace('\n','')
         header = (top.split (",")) #uses the header to establish what each column is
-        a = header.index("algorithm")
-        i = header.index("instance")
-        p = header.index("performance")
+        a = header.index(algorithm_header)
+        i = header.index(instance_header)
+        p = header.index(performance_header)
         #print(header)
 
         data = csv.reader(file_obj)
